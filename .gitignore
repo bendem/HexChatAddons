@@ -4,6 +4,7 @@
 
 # Unignore only what we need
 !addons/
-!*.py
 !*.md
+!*.py
+!.editorconfig
 !.gitignore
