@@ -88,14 +88,18 @@ def handle_command(args):
     if command == 'help':
         format = (HEADING, BOLD, RESET)
         print('%s Usage: ' % HEADING)
-        print('%s %s/cr <save|help|list|clear|enable|disable>%s' % format)
-        print('%s %s/cr <remove> <key>%s'                        % format)
-        print('%s %s/cr <add> <key> <content>%s'                 % format)
+        print('%s %s/cr <save|help|list|keys|clear|enable|disable>%s' % format)
+        print('%s %s/cr <remove> <key>%s'                             % format)
+        print('%s %s/cr <add> <key> <content>%s'                      % format)
         return
 
     if command in ('enable', 'disable'):
         enabled = command == 'enable'
         print('%s %sd' % (HEADING, command))
+        return
+
+    if command == 'keys':
+        print('%s Keys: %s' % (HEADING, ', '.join(sorted(words.keys()))))
         return
 
     if command == 'list':
