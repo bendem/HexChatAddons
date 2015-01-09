@@ -1,0 +1,9 @@
+# Ignore everything
+*
+*/
+
+# Unignore only what we need
+!addons/
+!*.py
+!*.md
+!.gitignore
