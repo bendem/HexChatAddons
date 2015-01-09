@@ -13,6 +13,10 @@ def bear(word, word_eol, userdata):
         return
 
     if 'bear' in msg:
-        hexchat.command("settext " + msg.replace('bear', 'ʕ•ᴥ•ʔ').replace('Curlyʕ•ᴥ•ʔ', 'Curlybear'))
+        msg = msg.replace('bear', 'ʕ•ᴥ•ʔ')
+        for user in hexchat.get_list('users'):
+            if 'bear' in user.nick:
+                msg = msg.replace(user.nick.replace('bear', 'ʕ•ᴥ•ʔ'), user.nick)
+        hexchat.command("settext %s" % msg)
 
-hexchat.hook_print('Key Press', bear)
+hexchat.hook_print('Key Press', bear, priority = hexchat.PRI_LOWEST)
