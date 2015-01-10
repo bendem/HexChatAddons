@@ -22,6 +22,20 @@ HEADERS        = {
     'Authorization' : 'Basic %s' % base64.b64encode(('%s:%s' % (USER, PASSWORD)).encode(ENCODING)).decode(ENCODING)
 }
 
+def unicode_check(func):
+    """
+    Retry in case of unicode fail due to a known HexChat bug.
+    See https://github.com/hexchat/hexchat/issues/869
+    """
+    def unicode_check_and_call(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except UnicodeDecodeError:
+            # Retrying
+            return func(*args, **kwargs)
+    return unicode_check_and_call
+
+@unicode_check
 def message(word, word_eol, userdata):
     channel = hexchat.get_info('channel')
     if channel[0] != '#': # Not a channel (query tab)
@@ -36,12 +50,14 @@ def message(word, word_eol, userdata):
 
     handle_message(channel, msg)
 
+@unicode_check
 def handle_message(channel, msg):
     msg = msg.strip('\n')
     if msg.count('\n') > 2:
         url = post_to_gist('Content pasted in %s' % channel, msg)
         hexchat.command("settext I posted too much, here is the paste: %s" % url)
 
+@unicode_check
 def post_to_gist(description, content):
     data = {
         'description': description,
@@ -60,6 +76,7 @@ def post_to_gist(description, content):
     decoded = json.loads(content.decode(ENCODING))
     return decoded['html_url']
 
+@unicode_check
 def post(url, data):
     data = json.dumps(data).encode(ENCODING)
 

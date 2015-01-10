@@ -37,12 +37,26 @@ chars = {
 }
 enabled = False
 
+def unicode_check(func):
+    """
+    Retry in case of unicode fail due to a known HexChat bug.
+    See https://github.com/hexchat/hexchat/issues/869
+    """
+    def unicode_check_and_call(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except UnicodeDecodeError:
+            # Retrying
+            return func(*args, **kwargs)
+    return unicode_check_and_call
+
 def command(word, word_eol, userdata):
     global enabled
     enabled = not enabled
     print('[%s] %s' % (__module_name__, 'enabled' if enabled else 'disabled'))
     return hexchat.EAT_ALL
 
+@unicode_check
 def message(word, word_eol, userdata):
     if not enabled:
         return
@@ -60,6 +74,7 @@ def message(word, word_eol, userdata):
 
     handle_message(channel, msg)
 
+@unicode_check
 def handle_message(channel, msg):
     new = []
     for i in range(len(msg)):

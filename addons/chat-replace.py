@@ -18,6 +18,19 @@ words   = DEFAULT_WORDS
 dirty   = False
 enabled = True
 
+def unicode_check(func):
+    """
+    Retry in case of unicode fail due to a known HexChat bug.
+    See https://github.com/hexchat/hexchat/issues/869
+    """
+    def unicode_check_and_call(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except UnicodeDecodeError:
+            # Retrying
+            return func(*args, **kwargs)
+    return unicode_check_and_call
+
 def load():
     """
     Loads the config.
@@ -145,6 +158,7 @@ def handle_command(args):
     print('%s "%s" %s' % (HEADING, key, 'added' if command == 'add' else 'modified'))
     dirty = True
 
+@unicode_check
 def message(word, word_eol, userdata):
     """
     Handles a message by replacing its content containing
@@ -165,15 +179,12 @@ def message(word, word_eol, userdata):
         return
 
     needs_changing = False
-    try:
-        for key, val in words.items():
-            search = '\\.' + key + '\\.'
-            regex = re.compile('(?:^|[^a-zA-Z0-9])%s(?:[^a-zA-Z0-9]|$)' % search)
-            if '.%s.' % key == msg or regex.search(msg):
-               msg = msg.replace('.' + key + '.', val)
-               needs_changing = True
-    except UnicodeDecodeError: # bug in hexchat, see https://github.com/hexchat/hexchat/issues/869
-        pass
+    for key, val in words.items():
+        search = '\\.' + key + '\\.'
+        regex = re.compile('(?:^|[^a-zA-Z0-9])%s(?:[^a-zA-Z0-9]|$)' % search)
+        if '.%s.' % key == msg or regex.search(msg):
+           msg = msg.replace('.' + key + '.', val)
+           needs_changing = True
 
     if needs_changing:
         hexchat.command('settext %s' % msg)
