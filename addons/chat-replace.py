@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 __module_name__        = 'Chat Replace'
 __module_author__      = 'bendem'
 __module_version__     = '1.1'
