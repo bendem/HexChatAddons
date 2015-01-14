@@ -14,7 +14,6 @@ def nick_color(nick):
     return colors[total]
 
 def message(word, word_eol, userdata):
-    print(word)
     nick = word[0]
     msg  = word[1]
     mode = word[2] if len(word) == 3 else ''
