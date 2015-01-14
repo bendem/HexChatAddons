@@ -175,7 +175,7 @@ def message(word, word_eol, userdata):
         return
 
     channel = hexchat.get_info('channel')
-    if channel[0] != '#': # Not a channel (query tab)
+    if len(channel) == 0 or channel[0] != '#': # Not a channel (query tab)
         return
 
     # 65293 is <enter>
