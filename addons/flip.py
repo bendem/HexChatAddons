@@ -54,7 +54,7 @@ def unicode_check(func):
 def command(word, word_eol, userdata):
     global enabled
     enabled = not enabled
-    print('[%s] %s' % (__module_name__, 'enabled' if enabled else 'disabled'))
+    print('%s\t%s' % (__module_name__, 'enabled' if enabled else 'disabled'))
     return hexchat.EAT_ALL
 
 def bs(val, pos):
