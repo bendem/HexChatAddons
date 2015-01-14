@@ -7,7 +7,7 @@ __module_description__ = 'Add chat snippets'
 import hexchat
 import re
 
-HEADING          = '[%s]' % __module_name__
+HEADING          = '\00318%s\017\t' % __module_name__
 BOLD             = '\002'
 RESET            = '\017'
 KEY_SEPARATOR    = ';'
@@ -31,6 +31,9 @@ def unicode_check(func):
             # Retrying
             return func(*args, **kwargs)
     return unicode_check_and_call
+
+def heading(string):
+    print('%s%s' % (HEADING, string))
 
 def load():
     """
@@ -62,15 +65,15 @@ def save(userdata):
     # This is because only the 512 first chars are read
     # https://github.com/hexchat/hexchat/issues/1265
     if len(keys) > 511:
-        print('%s Fatal error: Your keys are too long, they cannot be saved!'
-            + ' Aborting file corruption to prevent the end of the world!' % HEADING)
+        heading('Fatal error: Your keys are too long, they cannot be saved!'
+            + ' Aborting file corruption to prevent the end of the world!')
         return
 
     hexchat.set_pluginpref(PLUGIN_PREF_KEYS, keys)
     for key, val in words.items():
         hexchat.set_pluginpref(PLUGIN_PREF_VAL % key, val)
 
-    print('%s Saved' % HEADING)
+    heading('Saved')
     dirty = False
 
 def command(word, word_eol, userdata):
@@ -78,7 +81,7 @@ def command(word, word_eol, userdata):
     Wraps the command handling.
     """
     if len(word) < 1 or word[0] != 'cr':
-        print('%s Error, unhandled command' % HEADING)
+        heading('Error, unhandled command')
     else:
         handle_command(word[1:])
 
@@ -100,25 +103,25 @@ def handle_command(args):
         msg = ' '.join(args[2:])
 
     if command == 'help':
-        format = (HEADING, BOLD, RESET)
-        print('%s Usage: ' % HEADING)
-        print('%s %s/cr <save|help|list|keys|clear|enable|disable>%s' % format)
-        print('%s %s/cr <remove> <key>%s'                             % format)
-        print('%s %s/cr <add> <key> <content>%s'                      % format)
+        format = (BOLD, RESET)
+        heading('Usage:')
+        heading('%s/cr <save|help|list|keys|clear|enable|disable>%s' % format)
+        heading('%s/cr <remove> <key>%s'                             % format)
+        heading('%s/cr <add> <key> <content>%s'                      % format)
         return
 
     if command in ('enable', 'disable'):
         enabled = command == 'enable'
-        print('%s %sd' % (HEADING, command))
+        heading('%sd' % command)
         return
 
     if command == 'keys':
-        print('%s Keys: %s' % (HEADING, ', '.join(sorted(words.keys()))))
+        heading('Keys: %s' % ', '.join(sorted(words.keys())))
         return
 
     if command == 'list':
         for key, val in words.items():
-            print('%s: %s' % (key, val))
+            heading('%s: %s' % (key, val))
         return
 
     if command == 'save':
@@ -135,28 +138,28 @@ def handle_command(args):
 
     if command == 'remove' and len(args) > 1:
         if not key in words:
-            print('%s Error: Key (%s) not found' % (HEADING, key))
+            heading('Error: Key (%s) not found' % key)
         else:
             del words[key]
             hexchat.del_pluginpref(PLUGIN_PREF_VAL % key)
-            print('%s Key removed' % HEADING)
+            heading('Key removed')
             dirty = True
         return
 
     if not command == 'add' or len(args) < 3:
-        print('%s Error: Malformed command' % HEADING)
+        heading('Error: Malformed command')
         return
 
     if KEY_SEPARATOR in key:
-        print('%s Error: Key cannot contain "%s"' % (HEADING, KEY_SEPARATOR))
+        heading('Error: Key cannot contain "%s"' % KEY_SEPARATOR)
         return
 
     if len(msg) > 511:
         # https://github.com/hexchat/hexchat/issues/1265
-        print('%s Error: Message too long')
+        heading('Error: Message too long')
 
     words[key] = msg
-    print('%s "%s" %s' % (HEADING, key, 'added' if command == 'add' else 'modified'))
+    heading('"%s" %s' % (key, 'added' if command == 'add' else 'modified'))
     dirty = True
 
 @unicode_check
