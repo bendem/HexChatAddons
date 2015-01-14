@@ -7,7 +7,7 @@ __module_description__ = 'Add chat snippets'
 import hexchat
 import re
 
-HEADING          = '\00318%s\017\t' % __module_name__
+HEADING          = '\035\00318%s\017\t' % __module_name__
 BOLD             = '\002'
 RESET            = '\017'
 KEY_SEPARATOR    = ';'
