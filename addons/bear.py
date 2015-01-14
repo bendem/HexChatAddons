@@ -23,10 +23,20 @@ def unicode_check(func):
             return func(*args, **kwargs)
     return unicode_check_and_call
 
+def bs(val, pos):
+    return bool(val & (1 << pos))
+
 @unicode_check
 def bear(word, word_eol, userdata):
-    if word[0] != "65293" or word[1] != "0": # 65293 is <enter> and 0 is no modifier
+    # 65293 is <enter>
+    # 65421 is numpad <enter>
+    # 0 is no modifier
+    # 1 is caps lock
+    # 4 is num lock
+    mod = int(word[1])
+    if (word[0] != "65293" and word[0] != "65421") or (mod != 0 and not bs(mod, 1) and not bs(mod, 4)):
         return
+
     msg = hexchat.get_info('inputbox')
     if msg is None or len(msg) == 0 or msg[0] == '/':
         return

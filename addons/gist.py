@@ -36,13 +36,22 @@ def unicode_check(func):
             return func(*args, **kwargs)
     return unicode_check_and_call
 
+def bs(val, pos):
+    return bool(val & (1 << pos))
+
 @unicode_check
 def message(word, word_eol, userdata):
     channel = hexchat.get_info('channel')
     if channel[0] != '#': # Not a channel (query tab)
         return
 
-    if word[0] != "65293" or word[1] != "0": # 65293 is <enter> and 0 is no modifier
+    # 65293 is <enter>
+    # 65421 is numpad <enter>
+    # 0 is no modifier
+    # 1 is caps lock
+    # 4 is num lock
+    mod = int(word[1])
+    if (word[0] != "65293" and word[0] != "65421") or (mod != 0 and not bs(mod, 1) and not bs(mod, 4)):
         return
 
     msg = hexchat.get_info('inputbox')
@@ -82,7 +91,6 @@ def post(url, data):
     data = json.dumps(data).encode(ENCODING)
 
     request = urllib.request.Request(url, data, headers = HEADERS)
-    # response = setup_auth().open(request)
     try:
         response = urllib.request.urlopen(request)
     except urllib.error.HTTPError as e:
