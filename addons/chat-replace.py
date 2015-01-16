@@ -95,19 +95,20 @@ def handle_command(args):
     global words
     global enabled
 
-    if len(args) > 0:
+    if(len(args) == 0):
+        command = 'help'
+    else:
         command = args[0]
-    if len(args) > 1:
-        key = args[1]
-    if len(args) > 2:
-        msg = ' '.join(args[2:])
+        if len(args) > 1:
+            key = args[1]
+        if len(args) > 2:
+            msg = ' '.join(args[2:])
 
     if command == 'help':
-        format = (BOLD, RESET)
         heading('Usage:')
-        heading('%s/cr <save|help|list|keys|clear|enable|disable>%s' % format)
-        heading('%s/cr <remove> <key>%s'                             % format)
-        heading('%s/cr <add> <key> <content>%s'                      % format)
+        heading('/cr <save|help|list|keys|clear|enable|disable>')
+        heading('/cr <remove> <key>')
+        heading('/cr <add> <key> <content>')
         return
 
     if command in ('enable', 'disable'):
