@@ -20,8 +20,10 @@ def translate(x):
         .replace('%I', ITALIC) \
         .replace('%B', BOLD)
 
-MSG_FORMAT    = translate('%H<%H%C28%s%B%I%C%s%s%R%H>%H\t%I%s')
-ACTION_FORMAT = translate('%H<%H%B%C%s*%R%H>%H\t%C28%s%C%s%B%I%s%R %I%s')
+MSG_HEADER    = translate('%C28%s%B%I%C%s%s%R')
+MSG_FORMAT    = translate('%I%s%R')
+ACTION_HEADER = translate('%B%C%s*%R')
+ACTION_FORMAT = translate('%C28%s%C%s%B%I%s%R %I%s')
 
 colors = (19, 20, 22, 24, 25, 26, 27, 28, 29)
 
@@ -30,22 +32,33 @@ def nick_color(nick):
     total %= len(colors)
     return colors[total]
 
-def printMessage(mode, nick, msg):
-    print(MSG_FORMAT % (mode, nick_color(nick), nick, msg))
+def printMessage(mode, nick, msg, time):
+    hexchat.emit_print(
+        'Generic Message',
+        MSG_HEADER % (mode, nick_color(nick), nick),
+        MSG_FORMAT % msg
+    )
+    # print(MSG_FORMAT % (mode, nick_color(nick), nick, msg))
 
-def printAction(mode, nick, msg):
+def printAction(mode, nick, msg, time):
     color = nick_color(nick)
-    print(ACTION_FORMAT % (color, mode, color, nick, msg))
+    hexchat.emit_print(
+        'Generic Message',
+        ACTION_HEADER % color,
+        ACTION_FORMAT % (mode, color, nick, msg),
+        time = time
+    )
+    # print(ACTION_FORMAT % (color, mode, color, nick, msg))
 
-def message(word, word_eol, userdata):
+def message(word, word_eol, userdata, attributes):
     nick = word[0]
     msg  = word[1]
     mode = word[2] if len(word) == 3 else ''
     fct = printAction if userdata else printMessage
-    fct(mode, nick, msg)
+    fct(mode, nick, msg, attributes.time)
 
     return hexchat.EAT_HEXCHAT
 
 
-hexchat.hook_print('Channel Msg Hilight', message, priority = hexchat.PRI_LOWEST)
-hexchat.hook_print('Channel Action Hilight', message, priority = hexchat.PRI_LOWEST, userdata = True)
+hexchat.hook_print_attrs('Channel Msg Hilight', message, priority = hexchat.PRI_LOWEST)
+hexchat.hook_print_attrs('Channel Action Hilight', message, priority = hexchat.PRI_LOWEST, userdata = True)
