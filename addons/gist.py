@@ -38,7 +38,7 @@ class PostTask(threading.Thread):
         url = post_to_gist('Content posted in %s' % self.channel, self.data)
         c = hexchat.find_context(self.server, self.channel)
         if c:
-            c.command('MSG %s %s' % (self.channel, PASTE_MESSAGE % url))
+            c.command('msg %s %s' % (self.channel, PASTE_MESSAGE % url))
         else:
             print('%s\tCould not find context for %s%s, maybe you closed it?' % (
                 __module_name__,
@@ -82,7 +82,7 @@ def message(word, word_eol, userdata):
         return
 
     if handle_message(channel, msg):
-        hexchat.command('settext ')
+        hexchat.command('settext')
         return hexchat.EAT_HEXCHAT
 
 @unicode_check
