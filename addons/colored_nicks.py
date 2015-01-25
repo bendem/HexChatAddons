@@ -30,13 +30,12 @@ def message(word, word_eol, userdata, attributes):
     msg  = word[1]
     mode = word[2] if len(word) == 3 else ''
 
-    for u in hexchat.get_context().get_list('users'):
-        if u.nick in msg:
-            msg = re.sub(
-                r'\b%s\b' % re.escape(u.nick),
-                FORMAT % (u.prefix, COLOR % nick_color(u.nick), u.nick),
-                msg
-            )
+    for u in filter(lambda u: u.nick in msg, hexchat.get_context().get_list('users')):
+        msg = re.sub(
+            r'(?<![/.])\b%s\b' % re.escape(u.nick),
+            FORMAT % (u.prefix, COLOR % nick_color(u.nick), u.nick),
+            msg
+        )
 
     edited = True
     hexchat.emit_print(userdata, nick, msg, mode, time = attributes.time)
