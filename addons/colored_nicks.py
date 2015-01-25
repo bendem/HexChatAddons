@@ -50,3 +50,5 @@ events = [
 ]
 for e in events:
     hexchat.hook_print_attrs(e, message, priority = hexchat.PRI_LOW, userdata = e)
+
+print('%s\tLoaded' % __module_name__)

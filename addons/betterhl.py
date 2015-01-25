@@ -62,3 +62,5 @@ def message(word, word_eol, userdata, attributes):
 
 hexchat.hook_print_attrs('Channel Msg Hilight', message, priority = hexchat.PRI_LOWEST)
 hexchat.hook_print_attrs('Channel Action Hilight', message, priority = hexchat.PRI_LOWEST, userdata = True)
+
+print('%s\tLoaded' % __module_name__)

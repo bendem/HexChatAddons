@@ -99,3 +99,5 @@ def post(url, data):
     return (response.code, response.read())
 
 hexchat.hook_print('Key Press', message)
+
+print('%s\tLoaded' % __module_name__)

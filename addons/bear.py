@@ -54,3 +54,5 @@ def bear(word, word_eol, userdata):
         hexchat.command("settext %s" % msg)
 
 hexchat.hook_print('Key Press', bear, priority = hexchat.PRI_LOWEST)
+
+print('%s\tLoaded' % __module_name__)

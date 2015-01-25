@@ -99,3 +99,5 @@ def handle_message(channel, msg):
 
 hexchat.hook_print('Key Press', message)
 hexchat.hook_command("flip", command)
+
+print('%s\tLoaded' % __module_name__)

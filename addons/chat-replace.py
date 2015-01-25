@@ -207,3 +207,5 @@ load()
 hexchat.hook_print('Key Press', message)
 hexchat.hook_command("cr", command)
 hexchat.hook_unload(save)
+
+print('%s\tLoaded' % __module_name__)
