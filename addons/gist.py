@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__module_name__        = 'Pastebin'
+__module_name__        = 'Gist'
 __module_author__      = 'bendem'
 __module_version__     = '1.0'
 __module_description__ = 'Pastes large stuff on gist instead of flooding'
