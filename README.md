@@ -1,6 +1,6 @@
 # HexChat addons
 
-Here are my hexchat addons. They are written for 3.4.
+Here are my hexchat addons. They are written for python 3.4.
 
 # License
 
