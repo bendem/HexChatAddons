@@ -19,19 +19,6 @@ words   = DEFAULT_WORDS
 dirty   = False
 enabled = True
 
-def unicode_check(func):
-    """
-    Retry in case of unicode fail due to a known HexChat bug.
-    See https://github.com/hexchat/hexchat/issues/869
-    """
-    def unicode_check_and_call(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except UnicodeDecodeError:
-            # Retrying
-            return func(*args, **kwargs)
-    return unicode_check_and_call
-
 def heading(string):
     print('%s%s' % (HEADING, string))
 
@@ -166,7 +153,6 @@ def handle_command(args):
 def bs(val, pos):
     return bool(val & (1 << pos))
 
-@unicode_check
 def message(word, word_eol, userdata):
     """
     Handles a message by replacing its content containing

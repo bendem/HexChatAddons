@@ -46,23 +46,9 @@ class PostTask(threading.Thread):
                 self.channel
             ))
 
-def unicode_check(func):
-    """
-    Retry in case of unicode fail due to a known HexChat bug.
-    See https://github.com/hexchat/hexchat/issues/869
-    """
-    def unicode_check_and_call(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except UnicodeDecodeError:
-            # Retrying
-            return func(*args, **kwargs)
-    return unicode_check_and_call
-
 def bs(val, pos):
     return bool(val & (1 << pos))
 
-@unicode_check
 def message(word, word_eol, userdata):
     channel = hexchat.get_info('channel')
     if len(channel) == 0 or channel[0] != '#': # Not a channel (query tab)
@@ -85,7 +71,6 @@ def message(word, word_eol, userdata):
         hexchat.command('settext')
         return hexchat.EAT_HEXCHAT
 
-@unicode_check
 def handle_message(channel, msg):
     msg = msg.strip('\n')
     if msg.count('\n') < 3:
@@ -95,7 +80,6 @@ def handle_message(channel, msg):
     PostTask(msg, channel, server).start()
     return True
 
-@unicode_check
 def post_to_gist(description, content):
     data = {
         'description': description,
@@ -114,7 +98,6 @@ def post_to_gist(description, content):
     decoded = json.loads(content.decode(ENCODING))
     return decoded['html_url']
 
-@unicode_check
 def post(url, data):
     data = json.dumps(data).encode(ENCODING)
 

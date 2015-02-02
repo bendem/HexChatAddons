@@ -10,23 +10,9 @@ words = {
     'bear': 'ʕ•ᴥ•ʔ',
 }
 
-def unicode_check(func):
-    """
-    Retry in case of unicode fail due to a known HexChat bug.
-    See https://github.com/hexchat/hexchat/issues/869
-    """
-    def unicode_check_and_call(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except UnicodeDecodeError:
-            # Retrying
-            return func(*args, **kwargs)
-    return unicode_check_and_call
-
 def bs(val, pos):
     return bool(val & (1 << pos))
 
-@unicode_check
 def bear(word, word_eol, userdata):
     # 65293 is <enter>
     # 65421 is numpad <enter>
