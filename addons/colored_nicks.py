@@ -47,7 +47,8 @@ events = [
     'Channel Message',
     'Channel Msg Hilight',
     'Channel Action Hilight',
-    'Your Message'
+    'Your Message',
+    'Your Action'
 ]
 for e in events:
     hexchat.hook_print_attrs(e, message, priority = hexchat.PRI_LOW, userdata = e)
