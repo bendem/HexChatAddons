@@ -52,7 +52,7 @@ def printAction(mode, nick, msg, time):
 
 def message(word, word_eol, userdata, attributes):
     nick = word[0]
-    msg  = word[1]
+    msg  = word[1].replace(ITALIC, '').replace(RESET, RESET + ITALIC)
     mode = word[2] if len(word) == 3 else ''
     fct = printAction if userdata else printMessage
     fct(mode, nick, msg, attributes.time)
