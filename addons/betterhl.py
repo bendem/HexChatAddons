@@ -28,6 +28,8 @@ ACTION_FORMAT = translate('%C28%s%C%s%B%I%s%R %I%s')
 colors = (19, 20, 22, 24, 25, 26, 27, 28, 29)
 
 def nick_color(nick):
+    # TODO Handle clients not having nick colors with
+    # hexchat.get_prefs('text_color_nicks')
     total = sum(ord(letter) for letter in nick)
     total %= len(colors)
     return colors[total]
@@ -36,9 +38,9 @@ def printMessage(mode, nick, msg, time):
     hexchat.emit_print(
         'Generic Message',
         MSG_HEADER % (mode, nick_color(nick), nick),
-        MSG_FORMAT % msg
+        MSG_FORMAT % msg,
+        time = time
     )
-    # print(MSG_FORMAT % (mode, nick_color(nick), nick, msg))
 
 def printAction(mode, nick, msg, time):
     color = nick_color(nick)
@@ -48,7 +50,6 @@ def printAction(mode, nick, msg, time):
         ACTION_FORMAT % (mode, color, nick, msg),
         time = time
     )
-    # print(ACTION_FORMAT % (color, mode, color, nick, msg))
 
 def message(word, word_eol, userdata, attributes):
     nick = word[0]
