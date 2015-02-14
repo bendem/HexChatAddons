@@ -32,7 +32,7 @@ def message(word, word_eol, userdata, attributes):
 
     for u in filter(lambda u: u.nick in msg, hexchat.get_context().get_list('users')):
         msg = re.sub(
-            r'(?<![/\u200b.])\b%s\b' % re.escape(u.nick),
+            r'(?<![/\u200b.])@?\b%s\b' % re.escape(u.nick),
             FORMAT % (u.prefix, COLOR % nick_color(u.nick), u.nick),
             msg
         )
