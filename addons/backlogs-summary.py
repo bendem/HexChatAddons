@@ -4,6 +4,7 @@ __module_author__      = "bendem"
 __module_version__     = "1.0"
 __module_description__ = "Prints pings from your backlog in a separate tab"
 
+from time import gmtime, mktime
 import hexchat
 
 COLOR = '\003%s'
@@ -72,6 +73,9 @@ def printStuff(word, word_eol, userdata):
 
     return hexchat.EAT_ALL
 
+def unload(userdata):
+    hexchat.set_pluginpref(PREF, mktime(gmtime()))
+
 # Get last hilight (so we don't print hls already seen)
 last_hl = hexchat.get_pluginpref(PREF)
 if last_hl:
@@ -82,6 +86,9 @@ else:
 hooks.append(hexchat.hook_print_attrs('Channel Msg Hilight', message))
 hooks.append(hexchat.hook_print_attrs('Channel Action Hilight', message))
 hooks.append(hexchat.hook_command('backlog', printStuff))
+
+# Hook on quit to save the timestamp the client was closed at
+hexchat.hook_unload(unload)
 
 # display backlogs in 10 seconds
 hexchat.command('timer 10 backlog')
