@@ -51,6 +51,6 @@ events = [
     'Your Action'
 ]
 for e in events:
-    hexchat.hook_print_attrs(e, message, priority = hexchat.PRI_LOW, userdata = e)
+    hexchat.hook_print_attrs(e, message, priority = hexchat.PRI_HIGH, userdata = e)
 
 print('%s\tLoaded' % __module_name__)
