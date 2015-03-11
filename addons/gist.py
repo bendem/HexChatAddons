@@ -14,15 +14,14 @@ import urllib.request
 
 PASTE_MESSAGE  = 'Too much content auto-gisted at %s'
 GIST_END_POINT = 'https://api.github.com/gists'
-USER           = '<redacted>'
-PASSWORD       = '<redacted>'
+OAUTH_KEY      = '<insert key here>' # generate one at https://github.com/settings/applications
 ENCODING       = 'UTF-8'
 HEADERS        = {
     'Accept'        : 'application/vnd.github.v3+json',
     'Accept-Charset': ENCODING,
     'Content-Type'  : 'application/json',
     'User-Agent'    : '%s/v%s/hexchat_script/python' % (__module_name__, __module_version__),
-    'Authorization' : 'Basic %s' % base64.b64encode(('%s:%s' % (USER, PASSWORD)).encode(ENCODING)).decode(ENCODING)
+    'Authorization' : 'Basic %s' % base64.b64encode(('%s:x-oauth-basic' % OAUTH_KEY).encode(ENCODING)).decode(ENCODING)
 }
 
 class PostTask(threading.Thread):
@@ -73,7 +72,7 @@ def message(word, word_eol, userdata):
 
 def handle_message(channel, msg):
     msg = msg.strip('\n')
-    if msg.count('\n') < 3:
+    if msg.count('\n') < 2:
         return False
 
     server = hexchat.get_info('server')
