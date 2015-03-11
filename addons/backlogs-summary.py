@@ -73,8 +73,10 @@ def printStuff(word, word_eol, userdata):
 
     return hexchat.EAT_ALL
 
-def unload(userdata):
-    hexchat.set_pluginpref(PREF, mktime(gmtime()))
+# def unload(userdata):
+#     t = mktime(gmtime())
+#     if t > last_hl:
+#         hexchat.set_pluginpref(PREF, t)
 
 # Get last hilight (so we don't print hls already seen)
 last_hl = hexchat.get_pluginpref(PREF)
@@ -88,7 +90,7 @@ hooks.append(hexchat.hook_print_attrs('Channel Action Hilight', message))
 hooks.append(hexchat.hook_command('backlog', printStuff))
 
 # Hook on quit to save the timestamp the client was closed at
-hexchat.hook_unload(unload)
+# hexchat.hook_unload(unload)
 
 # display backlogs in 10 seconds
 hexchat.command('timer 10 backlog')
