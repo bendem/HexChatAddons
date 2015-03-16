@@ -27,7 +27,7 @@ def command(args, word_eol, userdata):
     else:
         material = random.choice(slappingMaterials)
         n = 'n' if material[0] in voyels else ''
-        hexchat.command('me slaps %s with a%s %s' % (args[1], n, material))
+        hexchat.command('me slaps %s with a%s %s' % (' '.join(args[1:]), n, material))
 
     return hexchat.EAT_ALL
 
