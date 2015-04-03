@@ -63,7 +63,7 @@ def message(word, word_eol, userdata):
         return
 
     msg = hexchat.get_info('inputbox')
-    if msg is None or len(msg) == 0 or msg[0] == '/':
+    if msg is None or len(msg) == 0:
         return
 
     if handle_message(channel, msg):
