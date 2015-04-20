@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-__module_name__        = "Backlog summary"
+__module_name__        = "Pings"
 __module_author__      = "bendem"
 __module_version__     = "1.0"
-__module_description__ = "Prints pings from your backlog in a separate tab"
+__module_description__ = "Prints all pings you receive in a separate tab"
 
 from time import time
 import hexchat
