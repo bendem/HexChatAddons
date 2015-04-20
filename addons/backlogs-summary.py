@@ -4,18 +4,19 @@ __module_author__      = "bendem"
 __module_version__     = "1.0"
 __module_description__ = "Prints pings from your backlog in a separate tab"
 
-from time import gmtime, mktime
+from time import time
 import hexchat
 
-COLOR = '\003%s'
-RESET = '\017'
-PREF  = 'backlog_last_hl'
+COLOR    = '\003%s'
+PREF     = 'backlog_last_hl'
+RESET    = '\017'
+TAB_NAME = 'HLs'
 
 messages = []
 last_hl  = 0
-hooks    = []
+previous_session_last_hl = 0
 
-colors = (19, 20, 22, 24, 25, 26, 27, 28, 29)
+colors   = (19, 20, 22, 24, 25, 26, 27, 28, 29)
 
 def nick_color(nick):
     total = sum(ord(letter) for letter in nick)
@@ -23,14 +24,21 @@ def nick_color(nick):
     return colors[total]
 
 def message(word, word_eol, userdata, attributes):
-    # if not backlog or already seen
-    if attributes.time == 0 or last_hl >= attributes.time:
+    # Get real timestamp
+    stamp = attributes.time if attributes.time else int(time())
+
+    # Ignore messages from previous sessions
+    if previous_session_last_hl > stamp:
         return
 
+    global last_hl
     global messages
 
+    if stamp > last_hl:
+        last_hl = stamp
+
     messages.append((
-        attributes.time,
+        stamp,
         '%s%s%s/%s%s%s' % (
             COLOR % nick_color(word[0]),
             word[0],
@@ -42,57 +50,82 @@ def message(word, word_eol, userdata, attributes):
         word[1]
     ))
 
-def printStuff(word, word_eol, userdata):
-    # Disable all the things
-    for hook in hooks:
-        hexchat.unhook(hook)
+    # If it's not from backlog, display it now
+    if attributes.time == 0:
+        printStuff()
+
+def printStuff():
+    """
+    Display all messages in queue and saves the last timestamp.
+
+    If there are multiple messages, they are sorted by time.
+    """
+    global messages
+
+    count = len(messages)
 
     # if no hls, no need to do stuff
-    if len(messages) == 0:
-        print('%s\tNo backlogs' % __module_name__)
-        return hexchat.EAT_ALL
+    if count == 0:
+        return
 
-    # Sort by time
-    messages.sort(key = lambda t: t[0])
+    # Sort by time if there is more than one
+    if count != 1:
+        messages.sort(key = lambda t: t[0])
 
-    # Create new tab
-    hexchat.command('newserver')
-    context = hexchat.find_context(channel = '')
-    context.command('settab Backlog HLs')
+    # Get the tab if it exists
+    ctx = hexchat.find_context('', '')
+
+    if not ctx:
+        # Or create a new one
+        hexchat.command('newserver -noconnect')
+        ctx = hexchat.find_context('', '')
+        ctx.command('settab %s'  % TAB_NAME)
 
     for message in messages:
-        context.emit_print(
+        ctx.emit_print(
             'Generic Message',
             message[1],
             message[2],
             time = message[0]
         )
 
-    if len(messages) != 0:
-        hexchat.set_pluginpref(PREF, messages[-1][0])
+    if count:
+        # Reset the messages
+        messages = []
+        # and save the last_hl
+        hexchat.set_pluginpref(PREF, last_hl)
 
+    return
+
+def forcePrint(word, word_eol, userdata):
+    """
+    The /backlog command forces to print all messages in queue
+    """
+    printStuff()
     return hexchat.EAT_ALL
 
-# def unload(userdata):
-#     t = mktime(gmtime())
-#     if t > last_hl:
-#         hexchat.set_pluginpref(PREF, t)
+def connection(word, word_eol, userdata, attributes):
+    """
+    Display all messages at once 5 seconds after a connection.
 
-# Get last hilight (so we don't print hls already seen)
-last_hl = hexchat.get_pluginpref(PREF)
-if last_hl:
-    last_hl = int(last_hl)
+    That way, messages can be sorted by time instead of
+    having all from one channel, then all from another, etc.
+    """
+    hexchat.command('timer 5 backlog')
+
+# Get last hilight (so we don't print hls already seen from backlogs)
+previous_session_last_hl = hexchat.get_pluginpref(PREF)
+if previous_session_last_hl:
+    previous_session_last_hl = int(previous_session_last_hl)
+    last_hl = previous_session_last_hl
 else:
+    previous_session_last_hl = 0
     last_hl = 0
 
-hooks.append(hexchat.hook_print_attrs('Channel Msg Hilight', message))
-hooks.append(hexchat.hook_print_attrs('Channel Action Hilight', message))
-hooks.append(hexchat.hook_command('backlog', printStuff))
-
-# Hook on quit to save the timestamp the client was closed at
-# hexchat.hook_unload(unload)
-
-# display backlogs in 10 seconds
-hexchat.command('timer 10 backlog')
+hexchat.hook_print_attrs('Channel Msg Hilight', message)
+hexchat.hook_print_attrs('Channel Action Hilight', message)
+hexchat.hook_command('backlog', forcePrint)
+# 376: RPL_ENDOFMOTD (just before starting receiving backlogs if any)
+hexchat.hook_server_attrs('376', connection)
 
 print('%s\tLoaded' % __module_name__)
