@@ -28,7 +28,7 @@ def message(word, word_eol, userdata, attributes):
     stamp = attributes.time if attributes.time else int(time())
 
     # Ignore messages from previous sessions
-    if previous_session_last_hl > stamp:
+    if previous_session_last_hl >= stamp:
         return
 
     global last_hl
