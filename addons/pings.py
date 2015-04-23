@@ -12,6 +12,7 @@ PREF     = 'backlog_last_hl'
 RESET    = '\017'
 TAB_NAME = 'HLs'
 
+waiting  = 0
 messages = []
 last_hl  = 0
 previous_session_last_hl = 0
@@ -50,8 +51,8 @@ def message(word, word_eol, userdata, attributes):
         word[1]
     ))
 
-    # If it's not from backlog, display it now
-    if attributes.time == 0:
+    # We're not waiting and it's not from backlog, display it now
+    if waiting == 0 and attributes.time == 0:
         printStuff()
 
 def printStuff():
@@ -101,7 +102,12 @@ def forcePrint(word, word_eol, userdata):
     """
     The /backlog command forces to print all messages in queue
     """
-    printStuff()
+    global waiting
+
+    waiting -= 1
+    if waiting == 0:
+        printStuff()
+
     return hexchat.EAT_ALL
 
 def connection(word, word_eol, userdata, attributes):
@@ -111,6 +117,8 @@ def connection(word, word_eol, userdata, attributes):
     That way, messages can be sorted by time instead of
     having all from one channel, then all from another, etc.
     """
+    global waiting
+    waiting += 1
     hexchat.command('timer 5 backlog')
 
 # Get last hilight (so we don't print hls already seen from backlogs)
