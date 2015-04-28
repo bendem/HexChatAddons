@@ -93,6 +93,8 @@ def printStuff():
     if count:
         # Reset the messages
         messages = []
+        # Color the hl tab
+        ctx.command('gui color 3')
         # and save the last_hl
         hexchat.set_pluginpref(PREF, last_hl)
 
